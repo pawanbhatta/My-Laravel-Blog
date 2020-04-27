@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest;
 use Illuminate\Support\Facades\Storage;
 use Session;
+use Auth;
 
 class PostController extends Controller
 {
@@ -58,6 +59,8 @@ class PostController extends Controller
         }else{
             $filename = 'noimage.jpg';
         }
+        
+        $post->user_id = Auth::id();
         $post->image = $filename;
 
         $post->save();
@@ -101,22 +104,30 @@ class PostController extends Controller
     public function update(Request $request, $id)
     {
         $posts = Post::orderBy('created_at', 'asc')->paginate(5);
-
-        if($request->hasFile('image'))
-        {
-            $ext = $request->file('image')->getClientOriginalExtension();
-            $filename = time().'_'.$ext;
-            $path = $request->file('image')->storeAs('public/images', $filename);
-            $post->image = $filename;
-        }
-
         $post = Post::find($id);
-        $post->title = $request->title;
-        $post->desc = $request->desc;
 
-        $post->save();
-        Session::flash('msg', 'Post Updated Successfully');
+        if(Auth::id() == $post->user_id)
+        {
+            if($request->hasFile('image'))
+            {
+                $ext = $request->file('image')->getClientOriginalExtension();
+                $filename = time().'_'.$ext;
+                $path = $request->file('image')->storeAs('public/images', $filename);
+                $post->image = $filename;
+            }
+    
+            $post->title = $request->title;
+            $post->desc = $request->desc;
+    
+            $post->save();
+            Session::flash('msg', 'Post Updated Successfully');
+            return redirect('/posts');
+        }
+        else
+        {
+        Session::flash('error', 'This post does not belong to the current user');
         return redirect('/posts');
+        }
     }
 
     /**
@@ -128,12 +139,20 @@ class PostController extends Controller
     public function destroy($id)
     {
         $post = Post::Find($id);
-        if($post->image != 'noimage.jpg')
+        if(Auth::id() == $post->user_id)
         {
-            Storage::delete('public/images/'.$post->image);
+            if($post->image != 'noimage.jpg')
+            {
+                Storage::delete('public/images/'.$post->image);
+            }
+            $post->delete();
+            Session::flash('msg', 'Post Deleted Successfully');
+            return redirect('/posts');
         }
-        $post->delete();
-        Session::flash('msg', 'Post Deleted Successfully');
-        return redirect('/posts');
+        else
+        {
+            Session::flash('error', 'This post does not belong to the current user');
+            return redirect('/posts');
+        }
     }
 }

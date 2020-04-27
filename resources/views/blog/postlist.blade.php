@@ -20,11 +20,15 @@
                 <td>{{$post->title}}</td>
                 <td>{{$post->desc}}</td>
                 <td>
-                    <a href="{{ url('posts/'.$post->id)}}" class="btn btn-sm btn-info">Show</a>
-                    <a href="{{ url('posts/'.$post->id.'/edit')}}" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="{{ url('posts/'.$post->id)}}" class="btn btn-primary a-btn-slide-text">
+                        <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+                    </a>
+                    <a href="{{ url('posts/'.$post->id.'/edit')}}" class="btn btn-primary a-btn-slide-text">
+                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>   
+                    </a>
                     {!!Form::open(['action'=>['PostController@destroy', $post->id], 'method' => 'POST', 'class' => 'pull-right']) !!}
                         {{Form::hidden('_method','DELETE')}}
-                        {{Form::submit('Delete',['class' => 'btn btn-danger'])}}
+                        {{Form::button('<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>',['class' => 'btn btn-primary a-btn-slide-text', 'type'=>'submit'])}}
                     {!!Form::close() !!}  
                 </td>
             </tr>

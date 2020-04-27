@@ -9,6 +9,9 @@ $factory->define(Post::class, function (Faker $faker) {
     return [
         'title'=>$faker->word,
         'desc'=>$faker->text,
-        'image'=>$faker->imageUrl($width = 640, $height = 480)
+        'image'=>$faker->imageUrl($width = 640, $height = 480),
+        'user_id'   => function(){
+            return App\User::all()->random();
+        }
     ];
 });
