@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class PostResource extends JsonResource
 {
@@ -20,7 +21,8 @@ class PostResource extends JsonResource
             'user_id'   =>  $this->user_id,
             'title'     =>  $this->title,
             'desc'      =>  $this->desc,
-            'image'     =>  $this->image,
+            // 'image'     =>  Storage::disk('public')->url('images/' . $this->image),
+            'image'     => asset('storage/images/' . $this->image),
             // 'href'      =>  [
             //     'link'  =>  route('posts.show', $this->id)
             // ]
